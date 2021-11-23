@@ -86,7 +86,7 @@ export function info(): InfoResponse {
   const response: InfoResponse = {
     apiversion: "1",
     author: "icyJoseph",
-    color: "#888888",
+    color: "#212738",
     head: "default",
     tail: "default"
   };
@@ -152,7 +152,23 @@ export function move(gameState: GameState): MoveResponse {
 
   // TODO: Step 2 - Don't hit yourself.
   // Use information in gameState to prevent your Battlesnake from colliding with itself.
-  // const mybody = gameState.you.body
+  const mybody = gameState.you.body;
+
+  if (mybody.find(({ x, y }) => x === myHead.x && y === myHead.y + 1)) {
+    possibleMoves.up = false;
+  }
+
+  if (mybody.find(({ x, y }) => x === myHead.x && y === myHead.y - 1)) {
+    possibleMoves.down = false;
+  }
+
+  if (mybody.find(({ x, y }) => x === myHead.x - 1 && y === myHead.y)) {
+    possibleMoves.left = false;
+  }
+
+  if (mybody.find(({ x, y }) => x === myHead.x + 1 && y === myHead.y)) {
+    possibleMoves.right = false;
+  }
 
   // TODO: Step 3 - Don't collide with others.
   // Use information in gameState to prevent your Battlesnake from colliding with others.
