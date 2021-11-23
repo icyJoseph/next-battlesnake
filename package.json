@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "next lint",
     "wasm-pack-build": "wasm-pack build snake-rs",
-    "vercel-build": "curl https://sh.rustup.rs -sSf | sh -s -- -y && source /vercel/env && yarn build"
+    "vercel-build": "curl https://sh.rustup.rs -sSf | sh -s -- -y && source $HOME/.cargo/env && yarn build"
   },
   "dependencies": {
     "next": "12.0.4",
