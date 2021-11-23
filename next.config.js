@@ -5,7 +5,8 @@ module.exports = {
   webpack(config, { isServer, dev }) {
     config.experiments = {
       asyncWebAssembly: true,
-      layers: true
+      layers: true,
+      outputFileTracing: true
     };
 
     if (!dev && isServer) {

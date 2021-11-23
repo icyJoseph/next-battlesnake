@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "pages/api/wasm/**/*.js": {
+      "includeFiles": "./snake-rs/pkg/snake_logic_bg.wasm"
+    }
+  }
+}
