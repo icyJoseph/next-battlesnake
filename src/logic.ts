@@ -132,11 +132,11 @@ export function move(gameState: GameState): MoveResponse {
   const boardHeight = gameState.board.height;
 
   // if at the top edge
-  if (myHead.y === 0) {
+  if (myHead.y === boardHeight - 1) {
     possibleMoves.up = false;
   }
   // if at the bottom edge
-  if (myHead.y === boardHeight - 1) {
+  if (myHead.y === 0) {
     possibleMoves.down = false;
   }
 
