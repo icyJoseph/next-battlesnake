@@ -1,0 +1,22 @@
+@url = http://localhost:3000
+
+### 
+GET {{url}}/api
+
+###
+POST {{url}}/api/move
+Content-Type: application/json
+
+< ./payload.json
+
+###
+POST {{url}}/api/start
+Content-Type: application/json
+
+< ./payload.json
+
+###
+POST {{url}}/api/end
+Content-Type: application/json
+
+< ./payload.json
