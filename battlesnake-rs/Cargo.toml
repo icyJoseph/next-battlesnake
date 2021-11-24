@@ -1,8 +1,8 @@
 [package]
 authors = ["Joseph Chamochumbi <sephxd1234@gmail.com>"]
 edition = "2018"
-name = "snake-logic"
-version = "0.1.0"
+name = "battlesnake-rs"
+version = "0.0.0"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
