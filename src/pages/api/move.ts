@@ -22,7 +22,7 @@ export default async function handler(
 
   res.status(200).json(next);
 
-  await supabase.rpc(
+  const result = await supabase.rpc(
     "append_history",
     {
       row_id: req.body.game.id,
@@ -31,4 +31,6 @@ export default async function handler(
     },
     { head: true }
   );
+
+  console.log(result);
 }
