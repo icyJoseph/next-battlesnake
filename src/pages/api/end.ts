@@ -20,9 +20,7 @@ export default async function handler(
 
   end(req.body);
 
-  res.status(200).json({ ok: "End" });
-
-  await supabase
+  const result = await supabase
     .from("battlesnake_history")
     .update(
       {
@@ -33,4 +31,7 @@ export default async function handler(
       { returning: "minimal" }
     )
     .eq("uuid", req.body.game.id);
+
+  console.log(result);
+  return res.status(200).json({ ok: "End" });
 }
