@@ -10,6 +10,7 @@
     "vercel-build": "curl https://sh.rustup.rs -sSf | sh -s -- -y && source $HOME/.cargo/env && yarn wasm-pack-build && yarn build"
   },
   "dependencies": {
+    "@icyjoseph/battlesnake-rs": "^0.0.0",
     "next": "12.0.4",
     "react": "17.0.2",
     "react-dom": "17.0.2"
