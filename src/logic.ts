@@ -102,7 +102,9 @@ export function end(gameState: GameState): void {
   console.log(`${gameState.game.id} END\n`);
 }
 
-type Moves = Record<"up" | "down" | "left" | "right", boolean>;
+export type Directions = "up" | "down" | "left" | "right";
+
+type Moves = Record<Directions, boolean>;
 
 export function move(gameState: GameState): MoveResponse {
   let possibleMoves: Moves = {

@@ -1,9 +1,68 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
-import Head from "next/head";
-import Image from "next/image";
-import style from "../../style.module.css";
+import useSWR from "swr";
+import type { Directions, GameState } from "../../logic";
 
+type Game = {
+  moves: Directions[];
+  end_game: GameState | null;
+};
+
+const defaultValue = { moves: [], end_game: null };
+
+function toUnicode(move: Directions) {
+  switch (move) {
+    case "left":
+      return "←";
+    case "right":
+      return "→";
+    case "up":
+      return "↑";
+    case "down":
+      return "↓";
+    default:
+      return "?";
+  }
+}
+
+const SingleGame = ({ uuid, pk }: { uuid: string; pk: string }) => {
+  const { data = defaultValue } = useSWR<Game>(
+    [uuid, pk],
+    () =>
+      fetch(`/api/stats/${uuid}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ pk })
+      }).then((res) => res.json()),
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
+  );
+
+  const victory = data.end_game?.board.snakes.find(
+    (snake) => data.end_game?.you.id === snake.id
+  );
+
+  return (
+    <div>
+      <section>
+        <h2>Result</h2>
+
+        <p>{victory ? "Winner!" : "Defeated"}</p>
+      </section>
+
+      <section>
+        <h2>Moves</h2>
+
+        <code>
+          {data.moves.map((move, index) => (
+            <span key={move + index}> {toUnicode(move)} </span>
+          ))}
+        </code>
+      </section>
+    </div>
+  );
+};
 const Game: NextPage = () => {
   const router = useRouter();
   const { uuid, pk } = router.query;
@@ -12,36 +71,7 @@ const Game: NextPage = () => {
 
   if (Array.isArray(uuid) || Array.isArray(pk)) return null;
 
-  return (
-    <>
-      <Head>
-        <title>BattleSnake App</title>
-        <meta name="description" content="Battle snake using Next + Vercel" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <header className={`container ${style.header}`}>
-        <h1>Battlesnake / meta</h1>
-
-        <h2>Game: {uuid}</h2>
-      </header>
-
-      <main className={`container ${style.content}`}></main>
-
-      <footer className={`container ${style.footer}`}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{" "}
-          <span>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
-    </>
-  );
+  return <SingleGame uuid={uuid} pk={pk} />;
 };
 
 export default Game;
