@@ -22,12 +22,13 @@ export default async function handler(
 
   res.status(200).json({ ok: "End" });
 
-  const result = await supabase.rpc("last_frame", {
-    row_id: req.body.game.id,
-    frame: req.body
-  });
-
-  console.log(result);
-
-  console.log("End --->");
+  await supabase.from("battlesnake_history").upsert(
+    {
+      uuid: req.body.game.id,
+      end_game: req.body,
+      has_ended: true,
+      ended_at: new Date().toISOString()
+    },
+    { returning: "minimal" }
+  );
 }
