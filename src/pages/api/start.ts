@@ -23,7 +23,7 @@ export default async function handler(
   res.status(200).json({ ok: "Start" });
 
   // create a new row on battlesnake table
-  supabase
+  await supabase
     .from("battlesnake_history")
     .insert(
       { uuid: req.body.game.id, history: [req.body], moves: ["start"] },
