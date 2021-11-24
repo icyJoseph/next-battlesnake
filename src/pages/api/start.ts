@@ -1,9 +1,17 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
+import { createClient } from "@supabase/supabase-js";
 
 import { start } from "../../logic";
 
-export default function handler(
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+supabase.auth.setAuth(process.env.SUPABASE_ROLE_KEY);
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Record<string, string>>
 ) {
@@ -12,5 +20,13 @@ export default function handler(
 
   start(req.body);
 
-  return res.status(200).json({ ok: "Start" });
+  res.status(200).json({ ok: "Start" });
+
+  // create a new row on battlesnake table
+  await supabase
+    .from("battlesnake_history")
+    .insert(
+      { uuid: req.body.game.id, history: [req.body], moves: ["start"] },
+      { returning: "minimal" }
+    );
 }

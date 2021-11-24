@@ -1,9 +1,17 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
+import { createClient } from "@supabase/supabase-js";
 
 import { end } from "../../logic";
 
-export default function handler(
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
+supabase.auth.setAuth(process.env.SUPABASE_ROLE_KEY);
+
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Record<string, string>>
 ) {
@@ -12,5 +20,10 @@ export default function handler(
 
   end(req.body);
 
-  return res.status(200).json({ ok: "End" });
+  res.status(200).json({ ok: "End" });
+
+  await supabase.rpc("end_history", {
+    row_id: req.body.game.id,
+    entry: req.body
+  });
 }
