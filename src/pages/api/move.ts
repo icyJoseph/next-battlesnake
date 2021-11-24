@@ -22,9 +22,8 @@ export default async function handler(
 
   res.status(200).json(next);
 
-  await supabase.rpc("append_move", {
+  await supabase.rpc("add_move", {
     row_id: req.body.game.id,
-    entry: req.body,
     next_move: next.move
   });
 }

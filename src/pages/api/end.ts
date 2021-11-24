@@ -22,10 +22,12 @@ export default async function handler(
 
   res.status(200).json({ ok: "End" });
 
-  const result = await supabase.rpc("end_history", {
+  const result = await supabase.rpc("last_frame", {
     row_id: req.body.game.id,
-    entry: req.body
+    frame: req.body
   });
 
   console.log(result);
+
+  console.log("End --->");
 }
