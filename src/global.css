@@ -1,0 +1,11 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#__next {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}

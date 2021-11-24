@@ -1,51 +1,66 @@
 import type { NextPage } from "next";
+import Link from "next/link";
 import Head from "next/head";
 import Image from "next/image";
+import useSWR from "swr";
+import style from "../style.module.css";
+
+type GameSummary = {
+  uuid: string;
+  pk: string;
+  created_at: string;
+  ended_at: string;
+  has_ended: boolean;
+  total_moves: number;
+};
+
+const locale = Intl.DateTimeFormat("sv-SE-u-hc-h23", {
+  day: "numeric",
+  month: "short",
+  hour: "numeric",
+  minute: "numeric"
+});
+
+const defaultValue: GameSummary[] = [];
 
 const Home: NextPage = () => {
+  const { data = defaultValue } = useSWR<GameSummary[]>("stats", () =>
+    fetch("/api/stats").then((res) => res.json())
+  );
+
   return (
-    <div>
+    <>
       <Head>
         <title>BattleSnake App</title>
         <meta name="description" content="Battle snake using Next + Vercel" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className="container">
-        <h1>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <header className={`container ${style.header}`}>
+        <h1>Battlesnake</h1>
 
-        <p>
-          Get started by editing <code>pages/index.tsx</code>
-        </p>
+        <h2>
+          Snake name: <pre>meta</pre>
+        </h2>
+      </header>
 
-        <div>
-          <a href="https://nextjs.org/docs">
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+      <main className={`container ${style.content}`}>
+        {data.map(({ uuid, pk, created_at, has_ended, total_moves }) => (
+          <article key={uuid}>
+            <header>{locale.format(new Date(created_at))}</header>
+            <div>
+              <p>Game status: {has_ended ? "Finished" : "Ongoing"}.</p>
 
-          <a href="https://nextjs.org/learn">
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a href="https://github.com/vercel/next.js/tree/master/examples">
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app">
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+              <Link key={uuid} href={`/game/${uuid}?pk=${pk}`}>
+                <a>See more.</a>
+              </Link>
+            </div>
+            <footer>Total moves: {total_moves}</footer>
+          </article>
+        ))}
       </main>
 
-      <footer>
+      <footer className={`container ${style.footer}`}>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
           target="_blank"
@@ -57,7 +72,7 @@ const Home: NextPage = () => {
           </span>
         </a>
       </footer>
-    </div>
+    </>
   );
 };
 

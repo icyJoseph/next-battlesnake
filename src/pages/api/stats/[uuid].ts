@@ -18,14 +18,14 @@ export default async function handler(
   if (req.method !== "POST")
     return res.status(404).json({ error: "Not Found" });
 
-  const { uuid } = req.query;
-  const { pk } = req.body;
+  const { uuid, pk } = req.query;
 
   if (Array.isArray(uuid)) return res.status(404).json({ error: "Not Found" });
+  if (Array.isArray(pk)) return res.status(404).json({ error: "Not Found" });
 
   const { data, error } = await supabase
     .from<{ uuid: string }>("battlesnake_history")
-    .select("uuid,has_ended,created_at,ended_at,start_game,end_game")
+    .select("uuid,has_ended,created_at,ended_at,start_game,end_game,moves")
     .eq("uuid", decrypt({ iv: pk, content: uuid }));
 
   if (!data || error) return res.status(404).json({ error: "Not Found" });

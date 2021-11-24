@@ -18,16 +18,24 @@ export default async function handler(
   if (req.method !== "GET") return res.status(404).json({ error: "Not Found" });
 
   const { data, error } = await supabase
-    .from<{ uuid: string }>("battlesnake_history")
-    .select("uuid,has_ended,created_at,ended_at")
+    .from<{ uuid: string; moves: string[]; created_at: string }>(
+      "battlesnake_history"
+    )
+    .select("uuid,has_ended,created_at,ended_at,moves")
     .range(0, 10);
 
   if (!data || error) return res.status(404).json({ error: "Not Found" });
 
-  const encrypted = data.map((entry) => {
-    const { iv, content } = encrypt(entry.uuid);
+  const encrypted = data
+    .map(({ uuid, moves, ...rest }) => {
+      const { iv, content } = encrypt(uuid);
 
-    return { ...entry, pk: iv, uuid: content };
-  });
+      return { ...rest, pk: iv, uuid: content, total_moves: moves.length };
+    })
+    .sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+
   return res.status(200).json(encrypted);
 }
