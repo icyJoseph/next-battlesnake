@@ -22,21 +22,13 @@ export default async function handler(
 
   res.status(200).json(next);
 
-  // upsert row on battlesnake table
-
-  const { data, error } = await supabase
-    .from<{ uuid: string; history: any[]; moves: any[] }>("battlesnake_history")
-    .select()
-    .eq("uuid", req.body.game.id)
-    .single();
-
-  if (!data || error) return;
-
-  // TODO: replace with an rpc
-
-  await supabase.rpc("append_history", {
-    row_id: req.body.game.id,
-    entry: req.body,
-    next_move: next.move
-  });
+  await supabase.rpc(
+    "append_history",
+    {
+      row_id: req.body.game.id,
+      entry: req.body,
+      next_move: next.move
+    },
+    { head: true }
+  );
 }

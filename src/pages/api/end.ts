@@ -22,8 +22,12 @@ export default async function handler(
 
   res.status(200).json({ ok: "End" });
 
-  await supabase.rpc("end_history", {
-    row_id: req.body.game.id,
-    entry: req.body
-  });
+  await supabase.rpc(
+    "end_history",
+    {
+      row_id: req.body.game.id,
+      entry: req.body
+    },
+    { head: true }
+  );
 }
