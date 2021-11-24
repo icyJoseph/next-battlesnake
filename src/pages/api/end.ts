@@ -22,13 +22,15 @@ export default async function handler(
 
   res.status(200).json({ ok: "End" });
 
-  await supabase.from("battlesnake_history").upsert(
-    {
-      uuid: req.body.game.id,
-      end_game: req.body,
-      has_ended: true,
-      ended_at: new Date().toISOString()
-    },
-    { returning: "minimal" }
-  );
+  await supabase
+    .from("battlesnake_history")
+    .update(
+      {
+        end_game: req.body,
+        has_ended: true,
+        ended_at: new Date().toISOString()
+      },
+      { returning: "minimal" }
+    )
+    .eq("uuid", req.body.game.id);
 }
