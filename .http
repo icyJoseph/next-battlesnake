@@ -20,3 +20,15 @@ POST {{url}}/api/end
 Content-Type: application/json
 
 < ./payload.json
+
+###
+GET {{url}}/api/stats
+Content-Type: application/json
+
+###
+POST {{url}}/api/stats/0860f867d81c1cbc8c8b470605960057825ab1c35a1052fe17a0c034
+Content-Type: application/json
+
+{
+    "pk": "339c54f31c61eba5b045258ab66ba41c"
+}
