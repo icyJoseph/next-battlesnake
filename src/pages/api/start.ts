@@ -23,10 +23,15 @@ export default async function handler(
   res.status(200).json({ ok: "Start" });
 
   // create a new row on battlesnake table
-  await supabase
+  const { data, error } = await supabase
     .from("battlesnake_history")
     .insert(
       { uuid: req.body.game.id, history: [req.body], moves: ["start"] },
       { returning: "minimal" }
     );
+
+  console.log("host", req.headers.host);
+
+  console.log("data", data);
+  console.log("error", error);
 }
