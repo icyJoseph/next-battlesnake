@@ -120,6 +120,7 @@ export function quick_bfs(
 ) {
   const q: number[] = [];
   const visited = createMatrix(size, () => false);
+  // assumed all points to be unreachable
   const distance = createMatrix(size, () => Infinity);
 
   visited[start] = true;
@@ -132,16 +133,18 @@ export function quick_bfs(
     if (current == null) break;
 
     for (const vec of adj[current]) {
-      if (vec === target) return distance[current] + 1;
-
       if (visited[vec]) continue;
 
       visited[vec] = true;
 
       if (grid[vec] === Infinity) {
         distance[vec] = Infinity;
+        // if we found the tail, which might be Infinity in grid
+        if (vec === target) return distance[current] + 1;
         continue;
       }
+
+      if (vec === target) return distance[current] + 1;
 
       distance[vec] = distance[current] + 1;
       q.push(vec);
