@@ -1,5 +1,12 @@
 import type { GameState, Directions, MoveResponse } from "./types";
-import { bfs, calcAdj, norm, invNorm, createMatrix } from "helpers/bfs";
+import {
+  bfs,
+  calcAdj,
+  norm,
+  invNorm,
+  createMatrix,
+  quick_bfs
+} from "helpers/bfs";
 
 type Moves = Record<Directions, boolean>;
 
@@ -50,10 +57,22 @@ export function move(gameState: GameState): MoveResponse {
     (val) => distances[val] !== Infinity
   );
 
+  const [tail] = myBody.slice(-1);
+
   for (const val of headAdj) {
     const { x: x0, y: y0 } = invNorm(val, boardWidth);
-    if (adj[val].filter((val) => distances[val] !== Infinity).length <= 1)
+    if (adj[val].filter((val) => distances[val] !== Infinity).length <= 2)
       continue;
+
+    const distance2tail = quick_bfs(
+      val,
+      norm(tail.x, tail.y, boardWidth),
+      adj,
+      boardMatrix,
+      boardHeight * boardWidth
+    );
+
+    if (distance2tail === Infinity) continue;
 
     if (myHead.x === x0) {
       // on the same X axis

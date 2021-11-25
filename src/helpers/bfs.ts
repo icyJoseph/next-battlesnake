@@ -110,3 +110,42 @@ export function bfs(
 
   return distance;
 }
+
+export function quick_bfs(
+  start: number,
+  target: number,
+  adj: number[][],
+  grid: number[],
+  size: number
+) {
+  const q: number[] = [];
+  const visited = createMatrix(size, () => false);
+  const distance = createMatrix(size, () => Infinity);
+
+  visited[start] = true;
+  distance[start] = 0;
+  q.push(start);
+
+  while (true) {
+    const current = q.shift();
+
+    if (current == null) break;
+
+    for (const vec of adj[current]) {
+      if (vec === target) return distance[current] + 1;
+
+      if (visited[vec]) continue;
+
+      visited[vec] = true;
+
+      if (grid[vec] === Infinity) {
+        distance[vec] = Infinity;
+        continue;
+      }
+
+      distance[vec] = distance[current] + 1;
+      q.push(vec);
+    }
+  }
+  return distance[target];
+}
