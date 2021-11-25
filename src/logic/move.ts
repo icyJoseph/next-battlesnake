@@ -12,11 +12,11 @@ import {
 type Moves = Record<Directions, boolean>;
 
 // helps us to work on a regular matrix
-export const flipVertical = (move: Directions): Directions => {
-  if (move === "up") return "down";
-  if (move === "down") return "up";
-  return move;
-};
+// export const flipVertical = (move: Directions): Directions => {
+//   if (move === "up") return "down";
+//   if (move === "down") return "up";
+//   return move;
+// };
 
 export function move(gameState: GameState): MoveResponse {
   let possibleMoves: Moves = {
@@ -120,9 +120,7 @@ export function move(gameState: GameState): MoveResponse {
   );
 
   const response: MoveResponse = {
-    move: flipVertical(
-      safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
-    )
+    move: safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
   };
 
   console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`);
