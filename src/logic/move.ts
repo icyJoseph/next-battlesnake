@@ -52,7 +52,7 @@ export function move(gameState: GameState): MoveResponse {
 
   for (const val of headAdj) {
     const { x: x0, y: y0 } = invNorm(val, boardWidth);
-    if (adj[val].length === 1) continue;
+    if (adj[val].length < 1) continue;
 
     if (myHead.x === x0) {
       // on the same X axis
