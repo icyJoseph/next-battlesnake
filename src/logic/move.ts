@@ -122,7 +122,9 @@ export function move(gameState: GameState): MoveResponse {
   );
 
   const response: MoveResponse = {
-    move: safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
+    move: flipVertical(
+      safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
+    )
   };
 
   console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`);
