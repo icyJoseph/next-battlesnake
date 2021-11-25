@@ -6,17 +6,11 @@ import {
   invNorm,
   // createMatrix,
   create2dMatrix,
-  flatten2dMatrix
+  flatten2dMatrix,
+  unflatten2dMatrix
 } from "helpers/bfs";
 
 type Moves = Record<Directions, boolean>;
-
-// helps us to work on a regular matrix
-export const flipVertical = (move: Directions): Directions => {
-  if (move === "up") return "down";
-  if (move === "down") return "up";
-  return move;
-};
 
 const isKey = (key: any, moves: Moves): key is Directions => key in moves;
 
@@ -39,7 +33,7 @@ export function move(gameState: GameState): MoveResponse {
   const adj = calcAdj(boardWidth, boardHeight);
 
   for (const snake of snakes) {
-    const { body } = snake;
+    const { body, head } = snake;
     for (const coord of body) {
       const { x, y } = coord;
       // it means that these should be impossible to reach
@@ -47,6 +41,8 @@ export function move(gameState: GameState): MoveResponse {
       // our snake here
       boardMatrix[y][x] = Infinity;
     }
+    const { x, y } = head;
+    boardMatrix[y][x] = Infinity;
   }
 
   const flatBoard = flatten2dMatrix(boardMatrix);
@@ -73,11 +69,11 @@ export function move(gameState: GameState): MoveResponse {
     if (myHead.x === x0) {
       // on the same X axis
       if (myHead.y + 1 === y0) {
-        // moving down
-        possibleMoves.down = true;
-      } else {
-        // moving up
+        // moving down but it is inverted
         possibleMoves.up = true;
+      } else {
+        // moving up but it is inverted
+        possibleMoves.down = true;
       }
     }
 
@@ -122,9 +118,7 @@ export function move(gameState: GameState): MoveResponse {
   );
 
   const response: MoveResponse = {
-    move: flipVertical(
-      safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
-    )
+    move: safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
   };
 
   console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`);
