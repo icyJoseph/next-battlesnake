@@ -3,7 +3,7 @@ export function norm(x: number, y: number, width: number) {
 }
 
 export function invNorm(normal: number, width: number) {
-  return { x: normal % width, y: normal / width };
+  return { x: normal % width, y: Math.floor(normal / width) };
 }
 
 export function createMatrix<T>(size: number, init: () => T): T[] {
