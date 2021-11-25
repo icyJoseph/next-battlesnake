@@ -61,7 +61,7 @@ export function move(gameState: GameState): MoveResponse {
 
   for (const val of headAdj) {
     const { x: x0, y: y0 } = invNorm(val, boardWidth);
-    if (adj[val].filter((val) => distances[val] !== Infinity).length <= 2)
+    if (adj[val].filter((val) => distances[val] !== Infinity).length <= 1)
       continue;
 
     const distance2tail = quick_bfs(

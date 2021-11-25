@@ -139,7 +139,7 @@ export function quick_bfs(
 
       if (grid[vec] === Infinity) {
         distance[vec] = Infinity;
-        // if we found the tail, which might be Infinity in grid
+        // if we found the tail, which is Infinity in grid
         if (vec === target) return distance[current] + 1;
         continue;
       }
@@ -150,5 +150,6 @@ export function quick_bfs(
       q.push(vec);
     }
   }
+
   return distance[target];
 }
