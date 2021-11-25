@@ -1,14 +1,5 @@
 import type { GameState, Directions, MoveResponse } from "./types";
-import {
-  bfs,
-  calcAdj,
-  norm,
-  invNorm,
-  // createMatrix,
-  create2dMatrix,
-  flatten2dMatrix,
-  unflatten2dMatrix
-} from "helpers/bfs";
+import { bfs, calcAdj, norm, invNorm, createMatrix } from "helpers/bfs";
 
 type Moves = Record<Directions, boolean>;
 
@@ -29,7 +20,7 @@ export function move(gameState: GameState): MoveResponse {
   const boardHeight = board.height;
   const snakes = board.snakes;
 
-  const boardMatrix = create2dMatrix<number>(boardWidth, boardHeight, () => 0);
+  const boardMatrix = createMatrix<number>(boardWidth * boardHeight, () => 0);
   const adj = calcAdj(boardWidth, boardHeight);
 
   for (const snake of snakes) {
@@ -39,13 +30,9 @@ export function move(gameState: GameState): MoveResponse {
       // it means that these should be impossible to reach
       // because it'd mean dying, there's no distance that could take
       // our snake here
-      boardMatrix[y][x] = Infinity;
+      boardMatrix[norm(x, y, boardWidth)] = Infinity;
     }
-    const { x, y } = head;
-    boardMatrix[y][x] = Infinity;
   }
-
-  const flatBoard = flatten2dMatrix(boardMatrix);
 
   // Self information
 
@@ -54,7 +41,7 @@ export function move(gameState: GameState): MoveResponse {
   const distances = bfs(
     norm(myHead.x, myHead.y, boardWidth),
     adj,
-    flatBoard,
+    boardMatrix,
     boardHeight * boardWidth
   );
 
