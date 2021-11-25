@@ -60,7 +60,7 @@ export function move(gameState: GameState): MoveResponse {
 
   // get all adjacent to head that are possible
   const headAdj = adj[norm(myHead.x, myHead.y, boardWidth)].filter(
-    (val) => distances[val] < Infinity
+    (val) => distances[val] !== Infinity
   );
 
   for (const val of headAdj) {

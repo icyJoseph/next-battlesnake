@@ -99,7 +99,7 @@ export function bfs(
       visited[vec] = true;
 
       if (grid[vec] === Infinity) {
-        distance[current] = Infinity;
+        distance[vec] = Infinity;
         continue;
       }
 
