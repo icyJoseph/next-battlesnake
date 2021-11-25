@@ -12,11 +12,13 @@ import {
 type Moves = Record<Directions, boolean>;
 
 // helps us to work on a regular matrix
-// export const flipVertical = (move: Directions): Directions => {
-//   if (move === "up") return "down";
-//   if (move === "down") return "up";
-//   return move;
-// };
+export const flipVertical = (move: Directions): Directions => {
+  if (move === "up") return "down";
+  if (move === "down") return "up";
+  return move;
+};
+
+const isKey = (key: any, moves: Moves): key is Directions => key in moves;
 
 export function move(gameState: GameState): MoveResponse {
   let possibleMoves: Moves = {
@@ -116,11 +118,13 @@ export function move(gameState: GameState): MoveResponse {
   // Finally, choose a move from the available safe moves.
   // TODO: Step 5 - Select a move to make based on strategy, rather than random.
   const safeMoves = Object.keys(possibleMoves).filter(
-    (key): key is keyof Moves => key in possibleMoves
+    (key): key is keyof Moves => isKey(key, possibleMoves) && possibleMoves[key]
   );
 
   const response: MoveResponse = {
-    move: safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
+    move: flipVertical(
+      safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
+    )
   };
 
   console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`);
