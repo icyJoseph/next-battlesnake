@@ -22,6 +22,8 @@ export default async function handler(
 
   res.status(200).json({ ok: "Start" });
 
+  if (process.env.NODE_ENV === "development") return;
+
   // create a new row on battlesnake table
   await supabase
     .from("battlesnake_history")

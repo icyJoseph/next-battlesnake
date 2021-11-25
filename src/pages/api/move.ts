@@ -23,6 +23,8 @@ export default async function handler(
 
   res.status(200).json(next);
 
+  if (process.env.NODE_ENV === "development") return;
+
   await supabase.rpc("add_move", {
     row_id: req.body.game.id,
     next_move: next.move
