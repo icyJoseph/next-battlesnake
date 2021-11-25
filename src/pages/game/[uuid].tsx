@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
 import useSWR from "swr";
-import type { Directions, GameState } from "../../logic";
+import type { Directions, GameState } from "logic/types";
 
 type Game = {
   moves: Directions[];

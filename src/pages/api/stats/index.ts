@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 
-import { encrypt } from "../../../utils";
+import { encrypt } from "utils";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,

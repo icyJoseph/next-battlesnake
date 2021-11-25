@@ -1,7 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { info, InfoResponse } from "../../logic";
+import { info } from "logic";
+import type { InfoResponse } from "logic/types";
 
 export default function handler(
   req: NextApiRequest,

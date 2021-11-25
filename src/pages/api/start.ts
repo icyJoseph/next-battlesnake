@@ -2,7 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 
-import { start } from "../../logic";
+import { start } from "logic";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
