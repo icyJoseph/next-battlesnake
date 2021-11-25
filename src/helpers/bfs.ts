@@ -3,7 +3,7 @@ export function norm(x: number, y: number, width: number) {
 }
 
 export function invNorm(normal: number, width: number) {
-  return [normal % width, normal / width];
+  return { x: normal % width, y: normal / width };
 }
 
 export function createMatrix<T>(size: number, init: () => T): T[] {
@@ -53,15 +53,19 @@ export function calcAdj(width: number, height: number) {
     for (let x = 0; x < width; x++) {
       let index = norm(x, y, width);
       if (x > 0) {
+        // down
         adj[index].push(norm(x - 1, y, width));
       }
       if (y + 1 < height) {
+        // right
         adj[index].push(norm(x, y + 1, width));
       }
       if (x + 1 < width) {
+        // left
         adj[index].push(norm(x + 1, y, width));
       }
       if (y > 0) {
+        // up
         adj[index].push(norm(x, y - 1, width));
       }
     }
@@ -70,7 +74,12 @@ export function calcAdj(width: number, height: number) {
   return adj;
 }
 
-export function bfs(start: number, adj: number[][], size: number) {
+export function bfs(
+  start: number,
+  adj: number[][],
+  grid: number[],
+  size: number
+) {
   const q: number[] = [];
   const visited = createMatrix(size, () => false);
   const distance = createMatrix(size, () => 0);
@@ -88,6 +97,12 @@ export function bfs(start: number, adj: number[][], size: number) {
       if (visited[vec]) continue;
 
       visited[vec] = true;
+
+      if (grid[vec] === Infinity) {
+        distance[current] = Infinity;
+        continue;
+      }
+
       distance[vec] = distance[current] + 1;
       q.push(vec);
     }

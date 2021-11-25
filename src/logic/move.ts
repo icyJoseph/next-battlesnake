@@ -1,74 +1,111 @@
 import type { GameState, Directions, MoveResponse } from "./types";
+import {
+  bfs,
+  calcAdj,
+  norm,
+  invNorm,
+  // createMatrix,
+  create2dMatrix,
+  flatten2dMatrix
+} from "helpers/bfs";
 
 type Moves = Record<Directions, boolean>;
 
-export function move(gameState: GameState): MoveResponse {
-  const { board, you } = gameState;
+// helps us to work on a regular matrix
+export const flipVertical = (move: Directions): Directions => {
+  if (move === "up") return "down";
+  if (move === "down") return "up";
+  return move;
+};
 
+export function move(gameState: GameState): MoveResponse {
   let possibleMoves: Moves = {
-    up: true,
-    down: true,
-    left: true,
-    right: true
+    up: false,
+    down: false,
+    left: false,
+    right: false
   };
 
-  // Step 0: Don't let your Battlesnake move back on it's own neck
-  const myHead = you.head;
-  const myNeck = you.body[1];
+  const { board, you } = gameState;
 
-  if (myNeck.x < myHead.x) {
-    possibleMoves.left = false;
-  } else if (myNeck.x > myHead.x) {
-    possibleMoves.right = false;
-  } else if (myNeck.y < myHead.y) {
-    possibleMoves.down = false;
-  } else if (myNeck.y > myHead.y) {
-    possibleMoves.up = false;
-  }
-
-  // TODO: Step 1 - Don't hit walls.
   // Use information in gameState to prevent your Battlesnake from moving beyond the boundaries of the board.
   const boardWidth = board.width;
   const boardHeight = board.height;
+  const snakes = board.snakes;
 
-  // if at the top edge
-  if (myHead.y === boardHeight - 1) {
-    possibleMoves.up = false;
-  }
-  // if at the bottom edge
-  if (myHead.y === 0) {
-    possibleMoves.down = false;
+  const boardMatrix = create2dMatrix<number>(boardWidth, boardHeight, () => 0);
+  const adj = calcAdj(boardWidth, boardHeight);
+
+  for (const snake of snakes) {
+    const { body } = snake;
+    for (const coord of body) {
+      const { x, y } = coord;
+      // it means that these should be impossible to reach
+      // because it'd mean dying, there's no distance that could take
+      // our snake here
+      boardMatrix[y][x] = Infinity;
+    }
   }
 
-  // if at the left edge
-  if (myHead.x === 0) {
-    possibleMoves.left = false;
+  const flatBoard = flatten2dMatrix(boardMatrix);
+
+  // Self information
+
+  const { health, length: selfLength, head: myHead, body: myBody } = you;
+
+  const distances = bfs(
+    norm(myHead.x, myHead.y, boardWidth),
+    adj,
+    flatBoard,
+    boardHeight * boardWidth
+  );
+
+  // get all adjacent to head that are possible
+  const headAdj = adj[norm(myHead.x, myHead.y, boardWidth)].filter(
+    (val) => distances[val] < Infinity
+  );
+
+  for (const val of headAdj) {
+    const { x: x0, y: y0 } = invNorm(val, boardWidth);
+
+    if (myHead.x === x0) {
+      // on the same X axis
+      if (myHead.y + 1 === y0) {
+        // moving down
+        possibleMoves.down = true;
+      } else {
+        // moving up
+        possibleMoves.up = true;
+      }
+    }
+
+    if (myHead.y === y0) {
+      // on the same Y axis
+      if (myHead.x + 1 === x0) {
+        // moving to the right
+        possibleMoves.right = true;
+      } else {
+        // moving to the left
+        possibleMoves.left = true;
+      }
+    }
   }
 
-  // if at the right edge
-  if (myHead.x === boardWidth - 1) {
-    possibleMoves.right = false;
-  }
+  // if (selfLength < 10) {
+  //   // look for closest food
+  // } else {
+  //   if (health < 10) {
+  //     // look for closest food
+  //   } else {
+  //     // chase tail
+  //     // move to adj to tail which has least distance
+  //   }
+  // }
+
+  // TODO: Step 1 - Don't hit walls.
 
   // TODO: Step 2 - Don't hit yourself.
   // Use information in gameState to prevent your Battlesnake from colliding with itself.
-  const mybody = you.body;
-
-  if (mybody.find(({ x, y }) => x === myHead.x && y === myHead.y + 1)) {
-    possibleMoves.up = false;
-  }
-
-  if (mybody.find(({ x, y }) => x === myHead.x && y === myHead.y - 1)) {
-    possibleMoves.down = false;
-  }
-
-  if (mybody.find(({ x, y }) => x === myHead.x - 1 && y === myHead.y)) {
-    possibleMoves.left = false;
-  }
-
-  if (mybody.find(({ x, y }) => x === myHead.x + 1 && y === myHead.y)) {
-    possibleMoves.right = false;
-  }
 
   // TODO: Step 3 - Don't collide with others.
   // Use information in gameState to prevent your Battlesnake from colliding with others.
@@ -79,11 +116,13 @@ export function move(gameState: GameState): MoveResponse {
   // Finally, choose a move from the available safe moves.
   // TODO: Step 5 - Select a move to make based on strategy, rather than random.
   const safeMoves = Object.keys(possibleMoves).filter(
-    (key) => possibleMoves[key as keyof Moves]
+    (key): key is keyof Moves => key in possibleMoves
   );
 
   const response: MoveResponse = {
-    move: safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
+    move: flipVertical(
+      safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
+    )
   };
 
   console.log(`${gameState.game.id} MOVE ${gameState.turn}: ${response.move}`);
