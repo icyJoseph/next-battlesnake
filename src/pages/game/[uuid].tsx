@@ -26,7 +26,7 @@ function toUnicode(move: Directions) {
 }
 
 const SingleGame = ({ uuid, pk }: { uuid: string; pk: string }) => {
-  const { data = defaultValue } = useSWR<Game>(
+  const { data, error } = useSWR<Game>(
     [uuid, pk],
     () =>
       fetch(`/api/stats/${uuid}`, {
@@ -39,8 +39,12 @@ const SingleGame = ({ uuid, pk }: { uuid: string; pk: string }) => {
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
-  const victory = data.end_game?.board.snakes.find(
-    (snake) => data.end_game?.you.id === snake.id
+  const loading = !data && !error;
+
+  const gameData = data || defaultValue;
+
+  const victory = gameData.end_game?.board.snakes.find(
+    (snake) => gameData.end_game?.you.id === snake.id
   );
 
   return (
@@ -48,14 +52,18 @@ const SingleGame = ({ uuid, pk }: { uuid: string; pk: string }) => {
       <section>
         <h2>Result</h2>
 
-        <p>{victory ? "Winner!" : "Defeated"}</p>
+        {loading ? (
+          <p>Waiting...</p>
+        ) : (
+          <p>{victory ? "Winner!" : "Defeated"}</p>
+        )}
       </section>
 
       <section>
         <h2>Moves</h2>
 
         <code>
-          {data.moves.map((move, index) => (
+          {gameData.moves.map((move, index) => (
             <span key={move + index}> {toUnicode(move)} </span>
           ))}
         </code>
