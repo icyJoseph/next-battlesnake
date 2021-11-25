@@ -142,7 +142,7 @@ export function move(gameState: GameState): MoveResponse {
   const bestMoves: Directions[] = Object.entries(possibleMoves)
     .filter(([, value]) => value !== Infinity) // remove impossible
     .sort((a, b) => b[1] - a[1]) // sort ascending
-    .filter(([, value]) => value < absoluteBest) // keep the best
+    .filter(([, value]) => value === absoluteBest) // keep the best
     .map(([key]) => key) // take only the move name
     .filter(isKey); // keep TS happy
 
