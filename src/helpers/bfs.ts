@@ -2,12 +2,52 @@ export function norm(x: number, y: number, width: number) {
   return x + y * width;
 }
 
-export function inv_norm(normal: number, width: number) {
+export function invNorm(normal: number, width: number) {
   return [normal % width, normal / width];
 }
 
-export function calc_adj(height: number, width: number) {
-  const adj: number[][] = Array.from({ length: width * height }, () => []);
+export function createMatrix<T>(size: number, init: () => T): T[] {
+  return Array.from({ length: size }, init);
+}
+
+export function create2dMatrix<T>(
+  width: number,
+  height: number,
+  init: () => T
+): T[][] {
+  return Array.from({ length: height }, () =>
+    Array.from({ length: width }, init)
+  );
+}
+
+export function flatten2dMatrix<T>(matrix: T[][]): T[] {
+  const result: T[] = [];
+
+  for (let y = 0; y < matrix.length; y++) {
+    const row = matrix[y];
+    result.push(...row);
+  }
+
+  return result;
+}
+
+export function unflatten2dMatrix<T>(
+  flatMatrix: T[],
+  width: number,
+  height: number
+): T[][] {
+  const result = [];
+
+  for (let y = 0; y < height; y++) {
+    const row = flatMatrix.slice(y * width, (y + 1) * width);
+    result.push(row);
+  }
+
+  return result;
+}
+
+export function calcAdj(width: number, height: number) {
+  const adj = createMatrix<number[]>(width * height, () => []);
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
@@ -30,10 +70,10 @@ export function calc_adj(height: number, width: number) {
   return adj;
 }
 
-export function bfs(start: number, adj: number[][], N: number) {
+export function bfs(start: number, adj: number[][], size: number) {
   const q: number[] = [];
-  const visited = Array.from({ length: N }, () => false);
-  const distance = Array.from({ length: N }, () => 0);
+  const visited = createMatrix(size, () => false);
+  const distance = createMatrix(size, () => 0);
 
   visited[start] = true;
   distance[start] = 0;
@@ -54,19 +94,4 @@ export function bfs(start: number, adj: number[][], N: number) {
   }
 
   return distance;
-}
-
-export function print_matrix(
-  matrix: number[][],
-  width: number,
-  height: number
-) {
-  const result = [];
-
-  for (let y = 0; y < height; y++) {
-    const row = matrix.slice(y * width, (y + 1) * width);
-    result.push(row);
-  }
-
-  return result;
 }

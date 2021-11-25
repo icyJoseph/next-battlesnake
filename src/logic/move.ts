@@ -3,6 +3,8 @@ import type { GameState, Directions, MoveResponse } from "./types";
 type Moves = Record<Directions, boolean>;
 
 export function move(gameState: GameState): MoveResponse {
+  const { board, you } = gameState;
+
   let possibleMoves: Moves = {
     up: true,
     down: true,
@@ -11,8 +13,8 @@ export function move(gameState: GameState): MoveResponse {
   };
 
   // Step 0: Don't let your Battlesnake move back on it's own neck
-  const myHead = gameState.you.head;
-  const myNeck = gameState.you.body[1];
+  const myHead = you.head;
+  const myNeck = you.body[1];
 
   if (myNeck.x < myHead.x) {
     possibleMoves.left = false;
@@ -26,8 +28,8 @@ export function move(gameState: GameState): MoveResponse {
 
   // TODO: Step 1 - Don't hit walls.
   // Use information in gameState to prevent your Battlesnake from moving beyond the boundaries of the board.
-  const boardWidth = gameState.board.width;
-  const boardHeight = gameState.board.height;
+  const boardWidth = board.width;
+  const boardHeight = board.height;
 
   // if at the top edge
   if (myHead.y === boardHeight - 1) {
@@ -50,7 +52,7 @@ export function move(gameState: GameState): MoveResponse {
 
   // TODO: Step 2 - Don't hit yourself.
   // Use information in gameState to prevent your Battlesnake from colliding with itself.
-  const mybody = gameState.you.body;
+  const mybody = you.body;
 
   if (mybody.find(({ x, y }) => x === myHead.x && y === myHead.y + 1)) {
     possibleMoves.up = false;
@@ -79,6 +81,7 @@ export function move(gameState: GameState): MoveResponse {
   const safeMoves = Object.keys(possibleMoves).filter(
     (key) => possibleMoves[key as keyof Moves]
   );
+
   const response: MoveResponse = {
     move: safeMoves[Math.floor(Math.random() * safeMoves.length)] || "up"
   };
