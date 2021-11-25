@@ -70,10 +70,10 @@ export function move(gameState: GameState): MoveResponse {
       // on the same X axis
       if (myHead.y + 1 === y0) {
         // moving down but it is inverted
-        possibleMoves.up = true;
+        possibleMoves.down = true;
       } else {
         // moving up but it is inverted
-        possibleMoves.down = true;
+        possibleMoves.up = true;
       }
     }
 
