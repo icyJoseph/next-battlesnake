@@ -22,6 +22,7 @@ export default async function handler(
       "battlesnake_history"
     )
     .select("uuid,has_ended,created_at,ended_at,moves")
+    .order("created_at", { ascending: false })
     .range(0, 10);
 
   if (!data || error) return res.status(404).json({ error: "Not Found" });
