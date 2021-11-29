@@ -9,6 +9,8 @@ type GameSummary = {
   ended_at: string;
   has_ended: boolean;
   total_moves: number;
+  winner: boolean;
+  snake_name: string;
 };
 
 const locale = Intl.DateTimeFormat("sv-SE-u-hc-h23", {
@@ -17,6 +19,28 @@ const locale = Intl.DateTimeFormat("sv-SE-u-hc-h23", {
   hour: "numeric",
   minute: "numeric"
 });
+
+export const Winner = ({
+  has_ended,
+  winner
+}: {
+  has_ended: boolean;
+  winner: boolean;
+}) =>
+  has_ended ? (
+    <p>
+      <span
+        className="emoji"
+        role="img"
+        aria-label={winner ? "Winner" : "Loser"}
+      >
+        {winner ? "👑" : "☠️"}
+      </span>
+      <strong>{winner ? " Winner" : " Loser"}</strong>
+    </p>
+  ) : (
+    <p>Game has not ended yet!</p>
+  );
 
 const defaultValue: GameSummary[] = [];
 
@@ -27,19 +51,33 @@ const Home: NextPage = () => {
 
   return (
     <>
-      {data.map(({ uuid, pk, created_at, has_ended, total_moves }) => (
-        <article key={uuid}>
-          <header>{locale.format(new Date(created_at))}</header>
-          <div>
-            <p>Game status: {has_ended ? "Finished" : "Ongoing"}.</p>
+      {data.map(
+        ({
+          uuid,
+          pk,
+          created_at,
+          has_ended,
+          total_moves,
+          winner,
+          snake_name
+        }) => (
+          <article key={uuid}>
+            <header>{locale.format(new Date(created_at))}</header>
+            <div>
+              <Winner has_ended={has_ended} winner={winner} />
 
-            <Link key={uuid} href={`/game/${uuid}?pk=${pk}`}>
-              <a>See more.</a>
-            </Link>
-          </div>
-          <footer>Total moves: {total_moves}</footer>
-        </article>
-      ))}
+              <p>Snake name: {snake_name}</p>
+
+              <p>Total moves: {total_moves}</p>
+            </div>
+            <footer>
+              <Link key={uuid} href={`/game/${uuid}?pk=${pk}`}>
+                <a>See more.</a>
+              </Link>
+            </footer>
+          </article>
+        )
+      )}
     </>
   );
 };

@@ -16,10 +16,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
       <header className={`container ${style.header}`}>
         <h1>Battlesnake</h1>
-
-        <h2>
-          Snake name: <pre>meta</pre>
-        </h2>
       </header>
 
       <main className={`container ${style.content}`}>

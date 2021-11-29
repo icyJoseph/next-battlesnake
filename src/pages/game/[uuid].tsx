@@ -1,14 +1,22 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
 import useSWR from "swr";
+import { Winner } from "pages";
 import type { Directions, GameState } from "logic/types";
 
 type Game = {
+  has_ended: boolean;
   moves: Directions[];
   end_game: GameState | null;
+  winner: boolean;
 };
 
-const defaultValue = { moves: [], end_game: null };
+const defaultValue = {
+  has_ended: false,
+  moves: [],
+  end_game: null,
+  winner: false
+};
 
 function toUnicode(move: Directions) {
   switch (move) {
@@ -26,7 +34,7 @@ function toUnicode(move: Directions) {
 }
 
 const SingleGame = ({ uuid, pk }: { uuid: string; pk: string }) => {
-  const { data, error } = useSWR<Game>(
+  const { data = defaultValue } = useSWR<Game>(
     [uuid, pk],
     () =>
       fetch(`/api/stats/${uuid}`, {
@@ -39,23 +47,23 @@ const SingleGame = ({ uuid, pk }: { uuid: string; pk: string }) => {
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
-  const loading = !data && !error;
-
   const gameData = data || defaultValue;
-
-  const victory = gameData.end_game?.board.snakes.find(
-    (snake) => gameData.end_game?.you.id === snake.id
-  );
 
   return (
     <div>
+      <header>
+        <h2>
+          Snake name: <pre>{data.end_game?.you.name || "Waiting..."}</pre>
+        </h2>
+      </header>
+
       <section>
         <h2>Result</h2>
 
-        {loading ? (
+        {data === defaultValue ? (
           <p>Waiting...</p>
         ) : (
-          <p>{victory ? "Winner!" : "Defeated"}</p>
+          <Winner has_ended={data.has_ended} winner={data.winner} />
         )}
       </section>
 

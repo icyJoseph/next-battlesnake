@@ -26,7 +26,9 @@ export default async function handler(
 
   const { data, error } = await supabase
     .from<{ uuid: string }>("battlesnake_history")
-    .select("uuid,has_ended,created_at,ended_at,start_game,end_game,moves")
+    .select(
+      "uuid,has_ended,created_at,ended_at,start_game,end_game,moves,winner"
+    )
     .eq("uuid", decrypt({ iv: pk, content: uuid }))
     .single();
 

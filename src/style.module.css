@@ -3,6 +3,10 @@
   flex: 0 1 auto;
 }
 
+.header > h1 {
+  margin-bottom: 2rem;
+}
+
 .content {
   flex: 1 1 auto;
 }
