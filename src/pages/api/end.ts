@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 
 import { end } from "logic";
+import Game from "pages/game/[uuid]";
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -27,7 +28,12 @@ export default async function handler(
         {
           end_game: req.body,
           has_ended: true,
-          ended_at: new Date().toISOString()
+          ended_at: new Date().toISOString(),
+          winner: Boolean(
+            req.body.board.snakes.find(
+              (snake: { id: string }) => snake.id === req.body.you.id
+            )
+          )
         },
         { returning: "minimal" }
       )
