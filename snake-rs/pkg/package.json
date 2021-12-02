@@ -1,0 +1,16 @@
+{
+  "name": "snake-logic",
+  "collaborators": [
+    "Joseph Chamochumbi <sephxd1234@gmail.com>"
+  ],
+  "version": "0.1.0",
+  "files": [
+    "snake_logic_bg.wasm",
+    "snake_logic.js",
+    "snake_logic_bg.js",
+    "snake_logic.d.ts"
+  ],
+  "module": "snake_logic.js",
+  "types": "snake_logic.d.ts",
+  "sideEffects": false
+}
