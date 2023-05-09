@@ -28,7 +28,7 @@ export default async function handler(
   await supabase
     .from("battlesnake_history")
     .insert(
-      { uuid: req.body.game.id, start_game: req.body },
+      { uuid: req.body.game.id, start_game: req.body, moves: [] },
       { returning: "minimal" }
     );
 }
