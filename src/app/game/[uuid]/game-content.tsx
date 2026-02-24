@@ -1,7 +1,9 @@
-import type { NextPage } from "next";
-import { useRouter } from "next/dist/client/router";
+"use client";
+
+import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
-import { Winner } from "pages";
+
+import { Winner } from "components/winner";
 import type { Directions, GameState } from "logic/types";
 
 type Game = {
@@ -11,11 +13,11 @@ type Game = {
   winner: boolean;
 };
 
-const defaultValue = {
+const defaultValue: Game = {
   has_ended: false,
   moves: [],
   end_game: null,
-  winner: false
+  winner: false,
 };
 
 function toUnicode(move: Directions) {
@@ -33,21 +35,17 @@ function toUnicode(move: Directions) {
   }
 }
 
-const SingleGame = ({ uuid, pk }: { uuid: string; pk: string }) => {
+function SingleGame({ uuid, pk }: { uuid: string; pk: string }) {
   const { data = defaultValue } = useSWR<Game>(
     [uuid, pk],
     () =>
       fetch(`/api/stats/${uuid}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ pk })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pk }),
       }).then((res) => res.json()),
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
-
-  const gameData = data || defaultValue;
 
   return (
     <div>
@@ -59,7 +57,6 @@ const SingleGame = ({ uuid, pk }: { uuid: string; pk: string }) => {
 
       <section>
         <h2>Result</h2>
-
         {data === defaultValue ? (
           <p>Waiting...</p>
         ) : (
@@ -69,25 +66,21 @@ const SingleGame = ({ uuid, pk }: { uuid: string; pk: string }) => {
 
       <section>
         <h2>Moves</h2>
-
         <code>
-          {gameData.moves.map((move, index) => (
+          {data.moves.map((move, index) => (
             <span key={move + index}> {toUnicode(move)} </span>
           ))}
         </code>
       </section>
     </div>
   );
-};
-const Game: NextPage = () => {
-  const router = useRouter();
-  const { uuid, pk } = router.query;
+}
 
-  if (!uuid || !pk) return null;
+export default function GameContent({ uuid }: { uuid: string }) {
+  const searchParams = useSearchParams();
+  const pk = searchParams.get("pk");
 
-  if (Array.isArray(uuid) || Array.isArray(pk)) return null;
+  if (!pk) return null;
 
   return <SingleGame uuid={uuid} pk={pk} />;
-};
-
-export default Game;
+}

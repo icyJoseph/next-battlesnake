@@ -4,10 +4,9 @@ body {
   margin: 0;
 }
 
-#__next {
+body {
   display: flex;
   flex-flow: column;
-  height: 100%;
 }
 
 .emoji {
