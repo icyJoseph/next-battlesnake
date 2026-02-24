@@ -1,20 +1,8 @@
-"use client";
-
 import Link from "next/link";
-import useSWR from "swr";
+import { cacheLife, cacheTag } from "next/cache";
 
+import { supabase } from "lib/supabase";
 import { Winner } from "components/winner";
-
-type GameSummary = {
-  uuid: string;
-  pk: string;
-  created_at: string;
-  ended_at: string;
-  has_ended: boolean;
-  total_moves: number;
-  winner: boolean;
-  snake_name: string;
-};
 
 const locale = Intl.DateTimeFormat("sv-SE-u-hc-h23", {
   day: "numeric",
@@ -23,38 +11,47 @@ const locale = Intl.DateTimeFormat("sv-SE-u-hc-h23", {
   minute: "numeric",
 });
 
-const defaultValue: GameSummary[] = [];
+async function GameList() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("gamelist");
 
-export default function Home() {
-  const { data = defaultValue } = useSWR<GameSummary[]>("stats", () =>
-    fetch("/api/stats").then((res) => res.json())
-  );
+  const { data } = await supabase
+    .from("battlesnake_history")
+    .select("uuid,has_ended,created_at,ended_at,moves,winner,start_game")
+    .order("created_at", { ascending: false })
+    .range(0, 20);
+
+  if (!data || data.length === 0) return <p>No games yet.</p>;
 
   return (
     <>
-      {data.map(
+      {(data as Array<Record<string, any>>).map(
         ({
           uuid,
-          pk,
           created_at,
           has_ended,
-          total_moves,
+          moves,
           winner,
-          snake_name,
+          start_game,
         }) => (
           <article key={uuid}>
             <header>{locale.format(new Date(created_at))}</header>
             <div>
               <Winner has_ended={has_ended} winner={winner} />
-              <p>Snake name: {snake_name}</p>
-              <p>Total moves: {total_moves}</p>
+              <p>Snake name: {start_game.you.name}</p>
+              <p>Total moves: {moves.length}</p>
             </div>
             <footer>
-              <Link href={`/game/${uuid}?pk=${pk}`}>See more.</Link>
+              <Link href={`/game/${uuid}`}>See more.</Link>
             </footer>
           </article>
         )
       )}
     </>
   );
+}
+
+export default function Home() {
+  return <GameList />;
 }
